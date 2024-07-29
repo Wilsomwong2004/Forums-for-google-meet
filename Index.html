@@ -1,0 +1,537 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Forums of Google Meet</title>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css" rel="stylesheet">
+    <style>
+        #createForumModal .modal-content {
+          max-width: 500px;
+          width: 100%;
+        }
+        #forumDescription {
+          resize: vertical;
+          max-height: 200px;
+        }
+
+        body {
+            font-family: Arial, sans-serif;
+            line-height: 1.6;
+            margin: 0;
+            padding: 20px;
+            background-color: #f4f4f4;
+        }
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            background-color: #fff;
+            padding: 20px;
+            border-radius: 5px;
+            box-shadow: 0 0 10px rgba(0,0,0,0.1);
+        }
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+        .search-bar {
+            flex-grow: 1;
+            margin-right: 10px;
+        }
+        .search-bar input {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+        }
+        button {
+            padding: 10px 15px;
+            background-color: #4CAF50;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+        button:hover {
+            background-color: #45a049;
+        }
+        .forum-item {
+            position: relative;
+            background-color: #f9f9f9;
+            border: 1px solid #ddd;
+            padding: 10px;
+            margin-bottom: 10px;
+            border-radius: 5px;
+            cursor: pointer;
+            word-wrap: break-word;
+            overflow-wrap: break-word;
+        }
+        .forum-content {
+          max-height: 100px;
+          overflow-y: auto;
+        }
+        .forum-item h3 {
+            margin-top: 0;
+        }
+        .forum-info {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-top: 10px;
+            font-size: 0.8em;
+            color: #666;
+        }
+        .forum-creator {
+            font-size: 0.9em;
+            color: #666;
+        }
+        .forum-actions {
+            display: flex;
+            align-items: center;
+            margin-top: 10px;
+        }
+        .forum-actions button {
+            background: none;
+            border: none;
+            cursor: pointer;
+            font-size: 1.2em;
+            margin-left: 10px;
+            padding: 5px;
+            transition: transform 0.3s ease;
+        }
+        .forum-actions button:hover {
+            transform: scale(1.2);
+        }
+        .pin-icon {
+          position: absolute;
+          top: 5px;
+          right: 5px;
+          cursor: pointer;
+          display: none;
+        }
+        .forum-item:hover .pin-icon {
+          display: block;
+        }
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 1;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            overflow: auto;
+            background-color: rgba(0,0,0,0.4);
+        }
+        .modal-content {
+            background-color: #fefefe;
+            margin: 5% auto;
+            padding: 20px;
+            border: 1px solid #888;
+            width: 90%;
+            max-width: 800px;
+            border-radius: 5px;
+            max-height: 90vh;
+            overflow-y: auto;
+        }
+        .close {
+            color: #aaa;
+            float: right;
+            font-size: 28px;
+            font-weight: bold;
+            cursor: pointer;
+        }
+        .close:hover {
+            color: #000;
+        }
+
+        .delete-button {
+          color: red;
+        }
+
+        #createForumForm input, #createForumForm textarea, #sendMessageForm input {
+            width: 100%;
+            padding: 10px;
+            margin: 10px 0;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+        }
+        .message-header {
+            border-bottom: 1px solid #ddd;
+            padding-bottom: 10px;
+            margin-bottom: 20px;
+        }
+        .message-info {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .message-list {
+          max-height: 300px;
+          overflow-y: auto;
+        }
+        .message-item {
+          border-bottom: 1px solid #eee;
+          padding: 10px 0;
+        }
+        .message-sender {
+            font-weight: bold;
+        }
+        .message-timestamp {
+            font-size: 0.8em;
+            color: #888;
+        }
+        .message-image {
+            max-width: 100%;
+            height: auto;
+            margin-top: 10px;
+        }
+        #imagePreview {
+            max-width: 200px;
+            max-height: 200px;
+            margin-top: 10px;
+        }
+        .message-input .file-input {
+          width: 100%;
+          max-width: 100%;
+          box-sizing: border-box;
+        }
+
+      .forum-item .forum-actions button {
+          background-color: transparent;
+          color: black;
+          border: 1px solid #ccc;
+          margin-right: 5px;
+          padding: 5px 10px;
+          cursor: pointer;
+          border-radius: 5px;
+      }
+
+      .forum-item .forum-actions .delete-button {
+          color: red;
+          border-color: red;
+      }
+
+      .forum-item .like-count, .forum-item .dislike-count {
+          color: black;
+          margin-right: 10px;
+      }
+
+
+    .forum-actions button {
+        background-color: transparent;
+        color: black;
+        border: 1px solid #ccc;
+        margin-left: 10px;
+        padding: 5px 10px;
+        cursor: pointer;
+        border-radius: 5px;
+    }
+
+    .forum-actions button i {
+        color: black;
+    }
+
+    .forum-actions button[onclick*="deleteForum"] {
+        color: red;
+        border-color: red;
+    }
+
+    .forum-actions button[onclick*="deleteForum"] i {
+        color: red;
+    }
+
+    #likeCount, #dislikeCount {
+        color: black;
+    }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <div class="search-bar">
+                <input type="text" id="searchInput" placeholder="Search forums...">
+            </div>
+            <button onclick="openModal('createForumModal')">Create new forums</button>
+        </div>
+        <div id="forumList"></div>
+    </div>
+
+    <div id="createForumModal" class="modal">
+        <div class="modal-content">
+            <span class="close" onclick="closeModal('createForumModal')">&times;</span>
+            <h2>Create new forums</h2>
+            <form id="createForumForm">
+                <input type="text" id="forumName" placeholder="Forums name" required>
+                <textarea id="forumDescription" placeholder="Description" required></textarea>
+                <button type="submit">Submit</button>
+            </form>
+        </div>
+    </div>
+
+    <div id="messageModal" class="modal">
+        <div class="modal-content">
+            <span class="close" onclick="closeModal('messageModal')">&times;</span>
+            <div class="message-header">
+                <h2 id="messageModalTitle"></h2>
+                <p id="messageModalDescription"></p>
+                <div class="message-info">
+                    <span id="messageModalCreator"></span>
+                    <div class="forum-actions">
+                        <button onclick="likeForum(currentForumId)"><i class="fas fa-thumbs-up"></i> <span id="likeCount"></span></button>
+                        <button onclick="dislikeForum(currentForumId)"><i class="fas fa-thumbs-down"></i> <span id="dislikeCount"></span></button>
+                    </div>
+                </div>
+                <p id="replyCount"></p>
+            </div>
+            <div id="messageList" class="message-list"></div>
+            <form id="sendMessageForm">
+                <input type="text" id="messageText" placeholder="Enter your message..." required>
+                <input type="file" id="imageInput" accept="image/*">
+                <img id="imagePreview" style="display: none;">
+                <button type="submit">Send</button>
+            </form>
+        </div>
+    </div>
+
+
+    <script>
+        let currentForumId = null;
+
+        function getForums() {
+            google.script.run.withSuccessHandler(displayForums).getForums();
+        }
+
+        function displayForums(forums) {
+            const forumList = document.getElementById('forumList');
+            forumList.innerHTML = '';
+            forums.forEach(forum => {
+                const forumElement = document.createElement('div');
+                forumElement.className = 'forum-item';
+                forumElement.innerHTML = `
+                    <h3>${forum.name}</h3>
+                    <p>${forum.description}</p>
+                    <div class="forum-info">
+                        <span class="forum-creator">${forum.creatorName} · ${new Date(forum.createdAt).toLocaleString()}</span>
+                        <div class="forum-actions">
+                            <button onclick="likeForum('${forum.id}', event)"><i class="fas fa-thumbs-up"></i> ${forum.likes}</button>
+                            <button onclick="dislikeForum('${forum.id}', event)"><i class="fas fa-thumbs-down"></i> ${forum.dislikes}</button>
+                            <button onclick="deleteForum('${forum.id}', event)"><i class="fas fa-trash"></i></button>
+                        </div>
+                    </div>
+                `;
+                forumElement.onclick = () => openMessageBoard(forum);
+                forumList.appendChild(forumElement);
+            });
+        }
+
+        document.getElementById('createForumForm').onsubmit = function(e) {
+            e.preventDefault();
+            const name = document.getElementById('forumName').value;
+            const description = document.getElementById('forumDescription').value;
+            google.script.run.withSuccessHandler(function() {
+                closeModal('createForumModal');
+                getForums();
+            }).createForum(name, description);
+        };
+
+        function deleteForum(id, event) {
+            event.stopPropagation();
+            if (confirm('Confirm delete this forum?')) {
+                google.script.run.withSuccessHandler(getForums).deleteForum(id);
+            }
+        }
+
+        function handleLikeDislike(forumId, action) {
+          google.script.run.withSuccessHandler(function(result) {
+            if (result) {
+              document.querySelector(`.forum-item[data-id="${forumId}"] .like-count`).textContent = `${result.likes} Likes`;
+              document.querySelector(`.forum-item[data-id="${forumId}"] .dislike-count`).textContent = `${result.dislikes} Dislikes`;
+            }
+          }).updateLikeDislike(forumId, action);
+        }
+
+        function likeForum(id, event) {
+            if (event) event.stopPropagation();
+            google.script.run.withSuccessHandler(function(result) {
+                getForums();
+                if (currentForumId === id) {
+                    document.getElementById('likeCount').textContent = result.likes;
+                    document.getElementById('dislikeCount').textContent = result.dislikes;
+                }
+            }).updateLikeCount(id, 'like');
+        }
+
+        function dislikeForum(id, event) {
+            if (event) event.stopPropagation();
+            google.script.run.withSuccessHandler(function(result) {
+                getForums();
+                if (currentForumId === id) {
+                    document.getElementById('likeCount').textContent = result.likes;
+                    document.getElementById('dislikeCount').textContent = result.dislikes;
+                }
+            }).updateLikeCount(id, 'dislike');
+        }
+
+        function openModal(modalId) {
+            document.getElementById(modalId).style.display = 'block';
+        }
+
+        function closeModal(modalId) {
+            document.getElementById(modalId).style.display = 'none';
+            if (modalId === 'createForumModal') {
+                document.getElementById('createForumForm').reset();
+            }
+        }
+
+        function openMessageBoard(forum) {
+            currentForumId = forum.id;
+            document.getElementById('messageModalTitle').textContent = forum.name;
+            document.getElementById('messageModalDescription').textContent = forum.description;
+            document.getElementById('messageModalCreator').textContent = `${forum.creatorName} · ${new Date(forum.createdAt).toLocaleString()}`;
+            document.getElementById('likeCount').textContent = forum.likes;
+            document.getElementById('dislikeCount').textContent = forum.dislikes;
+            openModal('messageModal');
+            getMessages(forum.id);
+        }
+
+        function getMessages(forumId) {
+            google.script.run.withSuccessHandler(displayMessages).getMessages(forumId);
+        }
+
+        function displayMessages(messages) {
+            const messageList = document.getElementById('messageList');
+            messageList.innerHTML = '';
+            messages.forEach(message => {
+                const messageElement = document.createElement('div');
+                messageElement.className = 'message-item';
+                messageElement.innerHTML = `
+                    <div class="message-sender">${message.sender}</div>
+                    <div class="message-text">${message.text}</div>
+                    ${message.imageUrl ? `<img src="${message.imageUrl}" class="message-image" alt="Uploaded image">` : ''}
+                    <div class="message-timestamp">${new Date(message.timestamp).toLocaleString()}</div>
+                `;
+                messageList.appendChild(messageElement);
+            });
+            messageList.scrollTop = messageList.scrollHeight;
+            document.getElementById('replyCount').textContent = `${messages.length} Replies`;
+        }
+
+        document.getElementById('imageInput').onchange = function(e) {
+            const file = e.target.files[0];
+            if (file) {
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    const preview = document.getElementById('imagePreview');
+                    preview.src = e.target.result;
+                    preview.style.display = 'block';
+                }
+                reader.readAsDataURL(file);
+            }
+        };
+
+        document.getElementById('sendMessageForm').onsubmit = function(e) {
+            e.preventDefault();
+            const messageText = document.getElementById('messageText').value;
+            const imageFile = document.getElementById('imageInput').files[0];
+            
+            if (imageFile) {
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    const imageData = e.target.result.split(',')[1]; 
+                    sendMessageWithImage(currentForumId, messageText, imageData);
+                }
+                reader.readAsDataURL(imageFile);
+            } else {
+                sendMessageWithImage(currentForumId, messageText, null);
+            }
+        };
+
+        function sendMessageWithImage(forumId, text, imageData) {
+            google.script.run.withSuccessHandler(function() {
+                document.getElementById('messageText').value = '';
+                document.getElementById('imageInput').value = '';
+                document.getElementById('imagePreview').style.display = 'none';
+                getMessages(forumId);
+            }).sendMessage(forumId, text, imageData);
+        }
+
+        function renderForums(forums) {
+          var forumListHtml = '';
+          forums.forEach(function(forum) {
+            forumListHtml += `
+              <div class="forum-item" data-id="${forum.id}">
+                <h3>${forum.name}</h3>
+                <div class="forum-content">${forum.description}</div>
+                <p class="forum-info">Created by: ${forum.creatorName} on ${new Date(forum.createdAt).toLocaleString()}</p>
+                <div class="forum-actions">
+                  <button onclick="openMessageModal('${forum.id}', '${forum.name}')">View Messages</button>
+                  <span class="like-count">${forum.likes} Likes</span>
+                  <span class="dislike-count">${forum.dislikes} Dislikes</span>
+                  <button class="delete-button" onclick="deleteForum('${forum.id}')">Delete</button>
+                </div>
+                <i class="pin-icon" onclick="pinForum('${forum.id}')">${forum.isPinned ? '📌' : '📍'}</i>
+              </div>
+            `;
+          });
+          document.getElementById('forumList').innerHTML = forumListHtml;
+        }
+
+        function pinForum(forumId) {
+          google.script.run.withSuccessHandler(function(isPinned) {
+            var pinIcon = document.querySelector(`.forum-item[data-id="${forumId}"] .pin-icon`);
+            pinIcon.textContent = isPinned ? '📌' : '📍';
+          }).pinForum(forumId);
+        }
+
+        // 搜索功能（继续）
+        document.getElementById('searchInput').oninput = function() {
+            const searchTerm = this.value.toLowerCase();
+            const forumItems = document.getElementsByClassName('forum-item');
+            Array.from(forumItems).forEach(item => {
+                const forumName = item.getElementsByTagName('h3')[0].innerText.toLowerCase();
+                const forumDescription = item.getElementsByTagName('p')[0].innerText.toLowerCase();
+                if (forumName.includes(searchTerm) || forumDescription.includes(searchTerm)) {
+                    item.style.display = '';
+                } else {
+                    item.style.display = 'none';
+                }
+            });
+        };
+
+        window.onload = getForums;
+
+        window.onclick = function(event) {
+            if (event.target.className === 'modal') {
+                event.target.style.display = "none";
+            }
+        }
+
+        function debounce(func, wait) {
+            let timeout;
+            return function(...args) {
+                clearTimeout(timeout);
+                timeout = setTimeout(() => func.apply(this, args), wait);
+            };
+        }
+
+        const debouncedSearch = debounce(function() {
+            const searchTerm = document.getElementById('searchInput').value.toLowerCase();
+            const forumItems = document.getElementsByClassName('forum-item');
+            Array.from(forumItems).forEach(item => {
+                const forumName = item.getElementsByTagName('h3')[0].innerText.toLowerCase();
+                const forumDescription = item.getElementsByTagName('p')[0].innerText.toLowerCase();
+                if (forumName.includes(searchTerm) || forumDescription.includes(searchTerm)) {
+                    item.style.display = '';
+                } else {
+                    item.style.display = 'none';
+                }
+            });
+        }, 300);
+
+        document.getElementById('searchInput').oninput = debouncedSearch;
+    </script>
+</body>
+</html>
